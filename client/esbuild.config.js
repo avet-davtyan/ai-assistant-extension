@@ -1,4 +1,12 @@
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+import dotenv from "dotenv";
 import esbuild from "esbuild";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: resolve(__dirname, "../.env") });
 
 esbuild
   .build({
@@ -13,6 +21,9 @@ esbuild
     outdir: "dist/",
     outbase: ".",
     entryNames: "[name]",
+    define: {
+      "process.env.API_URL": JSON.stringify(process.env.API_URL),
+    },
   })
   .then(() => {
     console.log("Build completed!");

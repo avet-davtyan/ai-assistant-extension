@@ -8,10 +8,7 @@
     "outDir": "./dist",     
     "esModuleInterop": true,       
     "skipLibCheck": true,          
-    "strict": true,
-    "paths": {
-      "@multi-client-sync/shared": ["../shared/src"]
-    }         
+    "strict": true,    
   },
   "include": [
     "src/**/*.ts",

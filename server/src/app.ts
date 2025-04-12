@@ -1,12 +1,12 @@
 import express from "express";
 import { envConfig } from "./env";
-import actionRoutes from "./routes/action.routes";
+import apiRoutes from "./routes/api.routes";
 
 envConfig("../.env");
 
 const app = express();
 
 app.use(express.json());
-app.use("/api/action", actionRoutes);
+app.use("/api", apiRoutes);
 
 export default app;
