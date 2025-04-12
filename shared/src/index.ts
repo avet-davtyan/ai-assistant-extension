@@ -1,1 +1,1 @@
-export * from "./action/action-type.schema";
+export * from "./action";

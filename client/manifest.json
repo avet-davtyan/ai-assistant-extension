@@ -3,7 +3,7 @@
   "name": "AI Assistant Extension",
   "version": "1.0",
   "description": "Browser-based AI assistant",
-  "permissions": ["scripting", "activeTab"],
+  "permissions": ["scripting", "activeTab", "tabs"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
