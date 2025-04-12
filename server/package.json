@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "express server",
+  "main": "main.js",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec 'ts-node' src/main.ts",
+    "lint": "eslint \"src/**/*.ts\" --fix"
+  },
+  "author": "Avet Davtyan",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/ws": "^8.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@ai-assistant/shared": "workspace:^",
+    "dotenv": "^16.4.7",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1"
+  }
+}

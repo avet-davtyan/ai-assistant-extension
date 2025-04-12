@@ -1,0 +1,14 @@
+node_modules/
+
+dist/
+
+*.tsbuildinfo
+
+coverage/
+.nyc_output/
+*.spec.js
+*.spec.ts
+*.test.js
+*.test.ts
+
+*.log
