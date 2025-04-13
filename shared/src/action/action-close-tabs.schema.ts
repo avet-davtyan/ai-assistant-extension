@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ActionType } from "./action-type.schema";
 
 export const ActionCloseTabsDataSchema = z.object({
-  tabIds: z.array(z.string()),
+  tabIds: z.array(z.number()),
 });
 
 export const ActionCloseTabsSchema = z.object({
