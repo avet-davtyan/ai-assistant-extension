@@ -12,7 +12,8 @@ esbuild
   .build({
     entryPoints: {
       "content": "src/content.ts",
-      "popup": "src/popup.ts"
+      "popup": "src/popup.ts",
+      "background": "src/background.ts",
     },
     bundle: true,
     platform: "browser",
