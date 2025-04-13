@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { ActionType } from "./action-type.schema";
 
-export const ActionOpenNewTabDataSchema = z.object({});
+export const ActionOpenNewTabDataSchema = z.object({
+  url: z.string().optional(),
+});
 
 export const ActionOpenNewTabSchema = z.object({
   actionType: z.literal(ActionType.OPEN_NEW_TAB),
