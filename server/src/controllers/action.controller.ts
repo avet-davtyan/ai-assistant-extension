@@ -1,32 +1,27 @@
 import {
-  ActionNavigateToTabSchema,
-  ActionOpenNewTabSchema,
-  ActionType,
   GenerateActionsRequestBody,
 } from "@ai-assistant/shared";
 import {
   Request,
   Response,
 } from "express";
+import { GenerationService } from "../generation/generation.service";
 
 export const generateActions = async (req: Request, res: Response) => {
 
+  const generationService = GenerationService.getInstance();
+
   try {
     const requestBody = await GenerateActionsRequestBody.parseAsync(req.body);
-    const { tabList } = requestBody;
+    const {
+      prompt,
+      tabList,
+    } = requestBody;
 
-    const actionOpenNewTab: ActionOpenNewTabSchema = {
-      actionType: ActionType.OPEN_NEW_TAB,
-      actionData: {url: undefined},
-    }
+    const response =
+      await generationService.generateActionGenerationResponse({prompt, tabList});
 
-    const navigateToTab: ActionNavigateToTabSchema = {
-      actionType: ActionType.NAVIGATE_TO_TAB,
-      actionData: {
-        tabId: tabList[0].tabId,
-      },
-    }
-    res.json([actionOpenNewTab, actionOpenNewTab, navigateToTab]);
+    res.json(response);
 
   } catch {
     res.send(400);
