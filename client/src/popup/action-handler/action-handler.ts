@@ -1,5 +1,11 @@
-import { ActionCloseTabsSchema, ActionNavigateToTabSchema, ActionOpenNewTabSchema, ActionType, ActionUnionSchema } from "@ai-assistant/shared";
-import { z } from "zod";
+import {
+  ActionCloseTabsSchema,
+  ActionOpenNewTabSchema,
+  ActionType,
+  ActionUnionSchema,
+  ActionUpdateTabSchema,
+  GeneratedActionsResponseSchema,
+} from "@ai-assistant/shared";
 
 export class GeneratedActionHandler {
 
@@ -16,13 +22,15 @@ export class GeneratedActionHandler {
   }
 
   async handleGeneratedActions(
-    actionList: unknown,
+    responseSchema: unknown,
   ) {
-    console.log("handling generated actions", actionList);
+    console.log("handling generated actions", responseSchema);
 
     let actionSchemaList: undefined | ActionUnionSchema[] = undefined;
     try {
-      actionSchemaList = await z.array(ActionUnionSchema).parseAsync(actionList);
+      const generatedActionsResponseSchema =
+        await GeneratedActionsResponseSchema.parseAsync(responseSchema);
+      actionSchemaList = generatedActionsResponseSchema.generatedActionList;
     } catch {
       console.error("can't parse event");
     }
@@ -35,8 +43,8 @@ export class GeneratedActionHandler {
       if(actionSchema.actionType === ActionType.OPEN_NEW_TAB) {
         await this.handleOpenNewTabAction(actionSchema);
       }
-      if(actionSchema.actionType === ActionType.NAVIGATE_TO_TAB) {
-        await this.handleNavigateToTabAction(actionSchema);
+      if(actionSchema.actionType === ActionType.UPDATE_TAB) {
+        await this.handleUpdateTabAction(actionSchema);
       }
       if(actionSchema.actionType === ActionType.CLOSE_TABS) {
         await this.handleCloseTabsAction(actionSchema);
@@ -54,13 +62,34 @@ export class GeneratedActionHandler {
     });
   }
 
-  private handleNavigateToTabAction(
-    action: ActionNavigateToTabSchema,
+  private handleUpdateTabAction(
+    action: ActionUpdateTabSchema,
   ) {
-    console.log("navigating to tab", action);
+    console.log("updating tab", action);
 
-    const { tabId } = action.actionData;
-    chrome.tabs.update(tabId, { active: true });
+    const {
+      tabId,
+      active,
+      autoDiscardable,
+      highlighted,
+      muted,
+      openerTabId,
+      pinned,
+      url,
+    } = action.actionData;
+
+    chrome.tabs.update(
+      tabId,
+      {
+        active,
+        autoDiscardable,
+        highlighted,
+        muted,
+        openerTabId,
+        pinned,
+        url,
+      },
+    );
   }
 
   private handleCloseTabsAction(
