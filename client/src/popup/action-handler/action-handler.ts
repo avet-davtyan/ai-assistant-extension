@@ -1,5 +1,6 @@
 import {
   ActionCloseTabsSchema,
+  ActionGroupTabsSchema,
   ActionOpenNewTabSchema,
   ActionType,
   ActionUnionSchema,
@@ -48,6 +49,9 @@ export class GeneratedActionHandler {
       }
       if(actionSchema.actionType === ActionType.CLOSE_TABS) {
         await this.handleCloseTabsAction(actionSchema);
+      }
+      if(actionSchema.actionType === ActionType.GROUP_TABS) {
+        await this.handleGroupTabsAction(actionSchema);
       }
     }
   }
@@ -98,5 +102,13 @@ export class GeneratedActionHandler {
     console.log("closing tabs", action);
 
     chrome.tabs.remove(action.actionData.tabIds);
+  }
+
+  private handleGroupTabsAction(
+    action: ActionGroupTabsSchema,
+  ) {
+    console.log("grouping tabs", action);
+
+    chrome.tabs.group({tabIds: action.actionData.tabIds});
   }
 }

@@ -16,10 +16,17 @@ export const generateActions = async (req: Request, res: Response) => {
     const {
       prompt,
       tabList,
+      groupList,
     } = requestBody;
 
     const response =
-      await generationService.generateActionGenerationResponse({prompt, tabList});
+      await generationService.generateActionGenerationResponse(
+        {
+          prompt,
+          tabList,
+          groupList,
+        }
+      );
 
     res.json(response);
 

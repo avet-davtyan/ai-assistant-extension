@@ -31,10 +31,14 @@ export class GenerationService {
     const {
       prompt,
       tabList,
+      groupList,
     } = options;
 
     const userContent = generateActionGenerationPromptUser(prompt);
-    const assistantContent = generateActionGenerationPromptAssistant(tabList);
+    const assistantContent = generateActionGenerationPromptAssistant({
+      groupList,
+      tabList,
+    });
 
     const response = await this.openAiApiService.sendRequest({
       userContent,

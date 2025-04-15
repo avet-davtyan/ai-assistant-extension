@@ -33,4 +33,13 @@ export const actionSchemas = [
     }
   }`,
   },
+  {
+    name: "GROUP_TABS",
+    example: `{
+    actionType: "GROUP_TABS",
+    actionData: {
+      tabIds: number[]
+    }
+  }`,
+  },
 ];
