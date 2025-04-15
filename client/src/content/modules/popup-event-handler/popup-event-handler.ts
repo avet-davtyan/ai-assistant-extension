@@ -91,7 +91,7 @@ export class PopupEventHandler {
       });
     }
 
-    return true; // <--- Keep the message channel open
+    return true;
   }
 
 }

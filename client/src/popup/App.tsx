@@ -21,11 +21,14 @@ const App = () => {
 
     const tabDataCollector = TabDataCollector.getInstance();
     const actionHandler = GeneratedActionHandler.getInstance();
+
     const tabList = await tabDataCollector.collectDataFromAllTabs();
-  
+
+
     const generateActionsBody: GenerateActionsRequestBody = {
       prompt,
       tabList,
+      groupList: [],
     }
     
     const generatedActionsResponseSchema =
