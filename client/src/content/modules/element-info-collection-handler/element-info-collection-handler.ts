@@ -8,9 +8,11 @@ export class ElementInfoCollectionHandler {
   private collectInfoTimeout: number;
   private currentTimeout: null | ReturnType<typeof setTimeout> = null;
   private currentInfoStringified: null | string = null;
+  private maxInfoLength: number;
 
   public constructor() {
     this.collectInfoTimeout = 3000;
+    this.maxInfoLength = 10000;
     this.isInfoCollectionActive = false;
     this.attachListeners();
   }
@@ -41,6 +43,11 @@ export class ElementInfoCollectionHandler {
     if(element.id) {
       elementInfo.id = element.id;
     }
+    else {
+      const randomId = this.generateRandomId();
+      element.id = randomId;
+      elementInfo.id = randomId;
+    }
 
     if(element.className) {
       elementInfo.className = element.className;
@@ -62,11 +69,9 @@ export class ElementInfoCollectionHandler {
       elementInfo.textContent = this.getVisibleText(element);
     }
 
-    if (depth > 0) {
-      for (const child of Array.from(element.children)) {
-        const childInfo = this.collectElementInfo(child as HtmlElementGeneral, depth - 1);
-        elementInfo.children.push(childInfo);
-      }
+    for (const child of Array.from(element.children)) {
+      const childInfo = this.collectElementInfo(child as HtmlElementGeneral, depth - 1);
+      elementInfo.children.push(childInfo);
     }
 
     return elementInfo;
@@ -94,29 +99,26 @@ export class ElementInfoCollectionHandler {
       return;
     }
 
+    if(newInfoStringified.length > this.maxInfoLength) {
+      return;
+    }
+
     if(this.currentTimeout !== null) {
       clearTimeout(this.currentTimeout);
     }
 
     this.currentTimeout = setTimeout(() => {
       console.log(info);
+
+      console.log(JSON.stringify(info));
     }, this.collectInfoTimeout);
 
     this.currentInfoStringified = newInfoStringified;
     return;
   }
 
-  private mouseLeaveListener() {
-    if (this.currentTimeout) {
-      clearTimeout(this.currentTimeout);
-      this.currentTimeout = null;
-    }
-    console.log("mouse leave")
-  }
-
   public attachMouseMoveListener() {
     document.addEventListener("mouseover", this.mouseHoverListener.bind(this));
-    // document.addEventListener("mouseleave", this.mouseLeaveListener.bind(this));
     this.isInfoCollectionActive = true;
   }
 
@@ -126,6 +128,10 @@ export class ElementInfoCollectionHandler {
 
   get isActive(): boolean {
     return this.isInfoCollectionActive;
+  }
+
+  private generateRandomId(): string {
+    return `gen-id-${Math.random().toString(36).substr(2, 9)}`;
   }
 
 }
