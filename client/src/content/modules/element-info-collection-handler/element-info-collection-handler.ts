@@ -88,18 +88,9 @@ export class ElementInfoCollectionHandler {
 
   private mouseHoverListener(e: MouseEvent) {
 
-    const target = e.target as HtmlElementGeneral;
-    if (!target) return;
+    const infoStringified = this.getElementInfoStringifiedFromMouseEvent(e);
 
-    const info = this.collectElementInfo(target);
-
-    const newInfoStringified = JSON.stringify(info);
-
-    if(newInfoStringified === this.currentInfoStringified) {
-      return;
-    }
-
-    if(newInfoStringified.length > this.maxInfoLength) {
+    if(infoStringified === null) {
       return;
     }
 
@@ -108,13 +99,31 @@ export class ElementInfoCollectionHandler {
     }
 
     this.currentTimeout = setTimeout(() => {
-      console.log(info);
-
-      console.log(JSON.stringify(info));
+      console.log(infoStringified);
     }, this.collectInfoTimeout);
 
-    this.currentInfoStringified = newInfoStringified;
-    return;
+    this.currentInfoStringified = infoStringified;
+  }
+
+  private getElementInfoStringifiedFromMouseEvent(
+    e: MouseEvent,
+  ): string | null {
+    const target = e.target as HtmlElementGeneral;
+    if (!target) return null;
+
+    const info = this.collectElementInfo(target);
+
+    const newInfoStringified = JSON.stringify(info);
+
+    if(newInfoStringified === this.currentInfoStringified) {
+      return null;
+    }
+
+    if(newInfoStringified.length > this.maxInfoLength) {
+      return null;
+    }
+
+    return newInfoStringified;
   }
 
   public attachMouseMoveListener() {
