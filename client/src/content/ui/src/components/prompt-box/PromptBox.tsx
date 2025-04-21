@@ -6,7 +6,6 @@ const PromptBox = () => {
   const {
     left,
     top,
-    visible,
     hide,
   } = usePromptBoxStore();
 

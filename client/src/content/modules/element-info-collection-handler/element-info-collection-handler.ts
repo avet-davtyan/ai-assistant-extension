@@ -1,10 +1,14 @@
 import { ElementInfoSchema } from "@ai-assistant/shared";
-import { HtmlElementGeneral } from "./types";
+import { HtmlElementGeneral, IElementInfoInternal } from "./types";
 import { PromptBoxController } from "../../ui/src/store/prompt-box-controller";
+import { ElementInfoController } from "../../ui/src/store/element-info-controller";
+import { ElementHighlightController } from "../../ui/src/store/element-highlight-controller";
 
 export class ElementInfoCollectionHandler {
 
   private readonly promptBoxController: PromptBoxController;
+  private readonly elementInfoController: ElementInfoController;
+  private readonly elementHighlightController: ElementHighlightController;
 
   public static instance: ElementInfoCollectionHandler;
   private isInfoCollectionActive: boolean;
@@ -27,6 +31,8 @@ export class ElementInfoCollectionHandler {
     this.attachMouseMoveListener();
 
     this.promptBoxController = PromptBoxController.getInstance();
+    this.elementInfoController = ElementInfoController.getInstance();
+    this.elementHighlightController = ElementHighlightController.getInstance();
   }
 
   public static getInstance(): ElementInfoCollectionHandler {
@@ -109,9 +115,9 @@ export class ElementInfoCollectionHandler {
       top: this.mousePositionTop,
     })
 
-    const infoStringified = this.getElementInfoStringifiedFromMouseEvent(e);
+    const elementInfoInternal = this.getElementInfoStringifiedFromMouseEvent(e);
 
-    if(infoStringified === null) {
+    if(elementInfoInternal === null) {
       return;
     }
 
@@ -130,7 +136,7 @@ export class ElementInfoCollectionHandler {
       );
     }, this.collectInfoTimeout);
 
-    this.currentInfoStringified = infoStringified;
+    this.currentInfoStringified = elementInfoInternal.elementInfoStringified;
   }
 
   private mouseMoveListener(e: MouseEvent) {
@@ -138,9 +144,9 @@ export class ElementInfoCollectionHandler {
     this.mousePositionLeft = e.clientX;
     this.mousePositionTop = e.clientY;
 
-    const infoStringified = this.getElementInfoStringifiedFromMouseEvent(e);
+    const elementInfoInternal = this.getElementInfoStringifiedFromMouseEvent(e);
 
-    if(infoStringified === null) {
+    if(elementInfoInternal === null) {
       return;
     }
 
@@ -149,16 +155,16 @@ export class ElementInfoCollectionHandler {
     }
 
     this.currentTimeout = setTimeout(() => {
-      console.log({info: JSON.parse(infoStringified)});
+      this.elementHighlightController.highlightElement(elementInfoInternal.elementInfo);
       this.promptBoxController.showAtPosition(this.mousePositionLeft, this.mousePositionTop);
     }, this.collectInfoTimeout);
 
-    this.currentInfoStringified = infoStringified;
+    this.currentInfoStringified = elementInfoInternal.elementInfoStringified;
   }
 
   private getElementInfoStringifiedFromMouseEvent(
     e: MouseEvent,
-  ): string | null {
+  ): IElementInfoInternal | null {
     const target = e.target as HtmlElementGeneral;
     if (!target) return null;
 
@@ -176,7 +182,10 @@ export class ElementInfoCollectionHandler {
       return null;
     }
 
-    return newInfoStringified;
+    return {
+      elementInfo: info,
+      elementInfoStringified: newInfoStringified
+    };
   }
 
   public attachMouseOverListener() {
