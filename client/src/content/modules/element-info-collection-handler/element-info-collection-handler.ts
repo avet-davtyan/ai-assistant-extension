@@ -13,11 +13,18 @@ export class ElementInfoCollectionHandler {
   private currentInfoStringified: null | string = null;
   private maxInfoLength: number;
 
+  private mousePositionLeft: number;
+  private mousePositionTop: number;
+
   public constructor() {
+
+    this.mousePositionLeft = 0;
+    this.mousePositionTop = 0;
+
     this.collectInfoTimeout = 3000;
     this.maxInfoLength = 10000;
     this.isInfoCollectionActive = false;
-    this.attachListeners();
+    this.attachMouseMoveListener();
 
     this.promptBoxController = PromptBoxController.getInstance();
   }
@@ -92,7 +99,15 @@ export class ElementInfoCollectionHandler {
     return elementInfo;
   }
 
-  private mouseHoverListener(e: MouseEvent) {
+  private mouseOverListener(e: MouseEvent) {
+
+    this.mousePositionLeft = e.clientX;
+    this.mousePositionTop = e.clientY;
+
+    console.log({
+      left: this.mousePositionLeft,
+      top: this.mousePositionTop,
+    })
 
     const infoStringified = this.getElementInfoStringifiedFromMouseEvent(e);
 
@@ -104,12 +119,38 @@ export class ElementInfoCollectionHandler {
       clearTimeout(this.currentTimeout);
     }
 
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
+    this.currentTimeout = setTimeout(() => {
+
+      const left = this.mousePositionLeft;
+      const top = this.mousePositionTop;
+
+      this.promptBoxController.showAtPosition(
+        left,
+        top,
+      );
+    }, this.collectInfoTimeout);
+
+    this.currentInfoStringified = infoStringified;
+  }
+
+  private mouseMoveListener(e: MouseEvent) {
+
+    this.mousePositionLeft = e.clientX;
+    this.mousePositionTop = e.clientY;
+
+    const infoStringified = this.getElementInfoStringifiedFromMouseEvent(e);
+
+    if(infoStringified === null) {
+      return;
+    }
+
+    if(this.currentTimeout !== null) {
+      clearTimeout(this.currentTimeout);
+    }
 
     this.currentTimeout = setTimeout(() => {
-      console.log({mouseX, mouseY});
-      this.promptBoxController.showAtPosition(mouseX, mouseY);
+      console.log({info: JSON.parse(infoStringified)});
+      this.promptBoxController.showAtPosition(this.mousePositionLeft, this.mousePositionTop);
     }, this.collectInfoTimeout);
 
     this.currentInfoStringified = infoStringified;
@@ -127,7 +168,7 @@ export class ElementInfoCollectionHandler {
 
     if(newInfoStringified === this.currentInfoStringified) {
       console.log("need to hide");
-      this.promptBoxController.hide();
+      // this.promptBoxController.hide();
       return null;
     }
 
@@ -138,13 +179,18 @@ export class ElementInfoCollectionHandler {
     return newInfoStringified;
   }
 
+  public attachMouseOverListener() {
+    document.addEventListener("mouseover", this.mouseOverListener.bind(this));
+    this.isInfoCollectionActive = true;
+  }
+
   public attachMouseMoveListener() {
-    document.addEventListener("mouseover", this.mouseHoverListener.bind(this));
+    document.addEventListener("mousemove", this.mouseMoveListener.bind(this));
     this.isInfoCollectionActive = true;
   }
 
   private attachListeners() {
-    this.attachMouseMoveListener();
+    this.attachMouseOverListener();
   }
 
   get isActive(): boolean {
