@@ -36,7 +36,9 @@ export class ElementInfoCollectionHandler {
       name: null,
       type: null,
       role: null,
+      innerText: null,
       textContent: null,
+      innerHTML: null,
       children: [],
     };
 
@@ -65,8 +67,16 @@ export class ElementInfoCollectionHandler {
       elementInfo.role = element.role;
     }
 
+    if(element.innerText) {
+      elementInfo.innerText = element.innerText;
+    }
+
     if(element.textContent) {
-      elementInfo.textContent = this.getVisibleText(element);
+      elementInfo.textContent = element.textContent;
+    }
+
+    if(element.innerHTML) {
+      elementInfo.innerHTML = element.innerHTML;
     }
 
     for (const child of Array.from(element.children)) {
@@ -75,15 +85,6 @@ export class ElementInfoCollectionHandler {
     }
 
     return elementInfo;
-  }
-
-  private getVisibleText(
-    element: HTMLElement,
-  ): string | null {
-    const text = element.innerText || element.textContent || "";
-    const cleaned = text.trim().replace(/\s+/g, " ").slice(0, 300);
-    if (cleaned.length === 0) return null;
-    return cleaned;
   }
 
   private mouseHoverListener(e: MouseEvent) {
