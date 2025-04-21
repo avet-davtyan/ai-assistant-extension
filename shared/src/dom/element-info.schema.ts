@@ -7,7 +7,9 @@ export const ElementInfoSchema = z.object({
   name: z.string().nullable(),
   type: z.string().nullable(),
   role: z.string().nullable(),
+  innerText: z.string().nullable(),
   textContent: z.string().nullable(),
+  innerHTML: z.string().nullable(),
   children: z.array(z.lazy((): any => ElementInfoSchema)),
 });
 
