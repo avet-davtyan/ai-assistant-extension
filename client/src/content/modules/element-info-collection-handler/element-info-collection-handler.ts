@@ -1,7 +1,10 @@
 import { ElementInfoSchema } from "@ai-assistant/shared";
 import { HtmlElementGeneral } from "./types";
+import { PromptBoxController } from "../../ui/src/store/prompt-box-controller";
 
 export class ElementInfoCollectionHandler {
+
+  private readonly promptBoxController: PromptBoxController;
 
   public static instance: ElementInfoCollectionHandler;
   private isInfoCollectionActive: boolean;
@@ -15,6 +18,8 @@ export class ElementInfoCollectionHandler {
     this.maxInfoLength = 10000;
     this.isInfoCollectionActive = false;
     this.attachListeners();
+
+    this.promptBoxController = PromptBoxController.getInstance();
   }
 
   public static getInstance(): ElementInfoCollectionHandler {
@@ -99,8 +104,12 @@ export class ElementInfoCollectionHandler {
       clearTimeout(this.currentTimeout);
     }
 
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+
     this.currentTimeout = setTimeout(() => {
-      console.log(infoStringified);
+      console.log({mouseX, mouseY});
+      this.promptBoxController.showAtPosition(mouseX, mouseY);
     }, this.collectInfoTimeout);
 
     this.currentInfoStringified = infoStringified;
@@ -117,6 +126,8 @@ export class ElementInfoCollectionHandler {
     const newInfoStringified = JSON.stringify(info);
 
     if(newInfoStringified === this.currentInfoStringified) {
+      console.log("need to hide");
+      this.promptBoxController.hide();
       return null;
     }
 
